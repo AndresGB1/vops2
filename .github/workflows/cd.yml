@@ -12,6 +12,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+    
 
       - name: Deploy frontend on EC2
         run: |
@@ -19,5 +20,7 @@ jobs:
           echo "${{ secrets.EC2_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           echo  ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} "docker -v"
+          ssh -i ~/.ssh/id_rsa  ec2-user@${{ secrets.EC2_HOST }} 'docker stop andresgb1/frontend || true && docker rm andresgb1/frontend || true'
+          ssh -i ~/.ssh/id_rsa  ec2-user@${{ secrets.EC2_HOST }} 'docker pull andresgb1/frontend'
+          ssh -i ~/.ssh/id_rsa  ec2-user@${{ secrets.EC2_HOST }} 'docker run -d -p 80:80 --name andresgb1/frontend andresgb1/frontend'
           
