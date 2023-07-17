@@ -12,23 +12,26 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: create file with private key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          echo  ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
     
       - name: Install Docker on EC2 instance
         run: |
-          ssh -i ${{ secrets.EC2_PRIVATE_KEY }} ec2-user@${{ secrets.EC2_HOST }} 'sudo service docker start | newgrp docker | chmod 777 /var/run/docker.sock  | sudo usermod -a -G docker ec2-user'          '
+          ssh -o StrictHostKeyChecking=no  -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} 'sudo service docker start | newgrp docker | chmod 777 /var/run/docker.sock  | sudo usermod -a -G docker ec2-user'          '
       
       - name: Restart EC2 instance
-        run: ssh -i ${{ secrets.EC2_PRIVATE_KEY }} ec2-user@${{ secrets.EC2_HOST }} 'sudo reboot'
+        run: ssh -o StrictHostKeyChecking=no  -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} 'sudo reboot'
   
       - name: Wait for EC2 instance to restart
         run: sleep 30
 
       - name: Deploy frontend on EC2
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          echo  ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
           ssh -o StrictHostKeyChecking=no  -i ~/.ssh/id_rsa  ec2-user@${{ secrets.EC2_HOST }} 'docker stop andresgb1/frontend || true && docker rm andresgb1/frontend || true'
           ssh -o StrictHostKeyChecking=no  -i ~/.ssh/id_rsa  ec2-user@${{ secrets.EC2_HOST }} 'docker pull andresgb1/frontend'
           ssh -o StrictHostKeyChecking=no  -i ~/.ssh/id_rsa  ec2-user@${{ secrets.EC2_HOST }} 'docker run -d -p 80:80 --name andresgb1/frontend andresgb1/frontend'
