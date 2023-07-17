@@ -27,14 +27,6 @@ jobs:
           ssh -o StrictHostKeyChecking=no  -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} 'sudo usermod -a -G docker ec2-user'
           ssh -o StrictHostKeyChecking=no  -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} 'newgrp docker'
 
-          
-      
-      - name: Restart EC2 instance
-        run: ssh -o StrictHostKeyChecking=no  -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} 'sudo reboot'
-  
-      - name: Wait for EC2 instance to restart
-        run: sleep 30
-
       - name: Deploy frontend on EC2
         run: |
           ssh -o StrictHostKeyChecking=no  -i ~/.ssh/id_rsa  ec2-user@${{ secrets.EC2_HOST }} 'docker stop andresgb1/frontend || true && docker rm andresgb1/frontend || true'
