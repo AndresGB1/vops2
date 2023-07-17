@@ -15,8 +15,7 @@ jobs:
     
       - name: Install Docker on EC2 instance
         run: |
-          ssh -i ${{ secrets.EC2_PRIVATE_KEY }} ec2-user@${{ secrets.EC2_HOST }} 'sudo service docker start'
-          ssh -i ${{ secrets.EC2_PRIVATE_KEY }} ec2-user@${{ secrets.EC2_HOST }} 'sudo usermod -a -G docker ec2-user'
+          ssh -i ${{ secrets.EC2_PRIVATE_KEY }} ec2-user@${{ secrets.EC2_HOST }} 'sudo service docker start | newgrp docker | chmod 777 /var/run/docker.sock  | sudo usermod -a -G docker ec2-user'          '
       
       - name: Restart EC2 instance
         run: ssh -i ${{ secrets.EC2_PRIVATE_KEY }} ec2-user@${{ secrets.EC2_HOST }} 'sudo reboot'
