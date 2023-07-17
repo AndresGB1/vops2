@@ -15,9 +15,8 @@ jobs:
 
       - name: Deploy frontend on EC2
         run: |
-          echo "${{ secrets.EC2_PRIVATE_KEY }}" > key.pem
-          chmod 600 key.pem
-          ssh -i key.pem ec2-user@${{ secrets.EC2_HOST }} 'docker stop front || true && docker rm front || true'
-          ssh -i key.pem ec2-user@${{ secrets.EC2_HOST }} 'docker pull front'
-          ssh -i key.pem ec2-user@${{ secrets.EC2_HOST }} 'docker run -d -p 80:80 --name frontend front
-          rm key.pem'
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} "docker -v"
+          
