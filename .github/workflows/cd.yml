@@ -22,7 +22,12 @@ jobs:
     
       - name: Install Docker on EC2 instance
         run: |
-          ssh -o StrictHostKeyChecking=no  -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} 'sudo service docker start | newgrp docker | chmod 777 /var/run/docker.sock  | sudo usermod -a -G docker ec2-user'          '
+          ssh -o StrictHostKeyChecking=no  -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} 'sudo service docker start'
+          ssh -o StrictHostKeyChecking=no  -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} 'sudo chmod 777 /var/run/docker.sock'
+          ssh -o StrictHostKeyChecking=no  -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} 'sudo usermod -a -G docker ec2-user'
+          ssh -o StrictHostKeyChecking=no  -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} 'newgrp docker'
+
+          
       
       - name: Restart EC2 instance
         run: ssh -o StrictHostKeyChecking=no  -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} 'sudo reboot'
