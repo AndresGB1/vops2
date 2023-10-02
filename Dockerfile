@@ -8,3 +8,5 @@ COPY . /usr/share/nginx/html
 EXPOSE 80
 
 # Nginx starts automatically, no need to set CMD
+
+sdf
